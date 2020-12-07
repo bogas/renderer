@@ -1,0 +1,3 @@
+/home/bogso/repos/renderer/tga/CMakeFiles/rebuild_cache.dir
+/home/bogso/repos/renderer/tga/CMakeFiles/tga.dir
+/home/bogso/repos/renderer/tga/CMakeFiles/edit_cache.dir

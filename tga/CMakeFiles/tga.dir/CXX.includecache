@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/bogso/repos/renderer/tga/tgaimage.cpp
+tgaimage.h
+/home/bogso/repos/renderer/tga/tgaimage.h
+fstream
+-
+iostream
+-
+math.h
+-
+string.h
+-
+time.h
+-
+
+/home/bogso/repos/renderer/tga/tgaimage.h
+fstream
+-
+
