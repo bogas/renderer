@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include <algorithm>
 #include <cmath>
 
 using namespace std;
@@ -14,7 +15,7 @@ void Renderer::setColor(TGAColor color) {
   }
 }
 
-void Renderer::drawLine(int x1, int y1, int x2, int y2, TGAColor color) {
+void Renderer::drawLine(int x1, int y1, int x2, int y2, TGAColor &color) {
   auto &localColor = color;
   auto swaped = false;
   if (abs(x2 - x1) < abs(y2 - y1)) {
@@ -48,8 +49,7 @@ void Renderer::drawLine(int x1, int y1, int x2, int y2, TGAColor color) {
 
 void Renderer::drawStar(int x, int y, int radius) {
   for (double alpha = 0; alpha <= 3.14 * 2; alpha += 0.1) {
-    drawLine(x, y, x + radius * sin(alpha), y + radius * cos(alpha),
-             Color::black);
+    drawLine(x, y, x + radius * sin(alpha), y + radius * cos(alpha));
   }
   auto localColor = Color::black;
   image->set(x, y, localColor);
@@ -85,14 +85,13 @@ void Renderer::drawMeshGridFront(const vector<Vertex> &vertices,
       drawLine(centerX + baseWidth * vertices.at(f.vertices[i]).x / factor,
                centerY - baseHeight * vertices.at(f.vertices[i]).y / factor,
                centerX + baseWidth * vertices.at(f.vertices[i + 1]).x / factor,
-               centerY - baseHeight * vertices.at(f.vertices[i + 1]).y / factor,
-               Color::black);
+               centerY -
+                   baseHeight * vertices.at(f.vertices[i + 1]).y / factor);
     }
     drawLine(centerX + baseWidth * vertices.begin()->x / factor,
              centerY - baseHeight * vertices.begin()->y / factor,
              centerX + baseWidth * (vertices.end() - 1)->x / factor,
-             centerY - baseHeight * (vertices.end() - 1)->y / factor,
-             Color::black);
+             centerY - baseHeight * (vertices.end() - 1)->y / factor);
   }
 }
 
@@ -111,14 +110,13 @@ void Renderer::drawMeshGridUp(const vector<Vertex> &vertices,
       drawLine(centerX + baseWidth * vertices.at(f.vertices[i]).x / factor,
                centerY - baseHeight * vertices.at(f.vertices[i]).z / factor,
                centerX + baseWidth * vertices.at(f.vertices[i + 1]).x / factor,
-               centerY - baseHeight * vertices.at(f.vertices[i + 1]).z / factor,
-               Color::black);
+               centerY -
+                   baseHeight * vertices.at(f.vertices[i + 1]).z / factor);
     }
     drawLine(centerX + baseWidth * vertices.begin()->x / factor,
              centerY - baseHeight * vertices.begin()->z / factor,
              centerX + baseWidth * (vertices.end() - 1)->x / factor,
-             centerY - baseHeight * (vertices.end() - 1)->z / factor,
-             Color::black);
+             centerY - baseHeight * (vertices.end() - 1)->z / factor);
   }
 }
 
@@ -137,14 +135,13 @@ void Renderer::drawMeshGridSide(const vector<Vertex> &vertices,
       drawLine(centerX + baseWidth * vertices.at(f.vertices[i]).z / factor,
                centerY - baseHeight * vertices.at(f.vertices[i]).y / factor,
                centerX + baseWidth * vertices.at(f.vertices[i + 1]).z / factor,
-               centerY - baseHeight * vertices.at(f.vertices[i + 1]).y / factor,
-               Color::black);
+               centerY -
+                   baseHeight * vertices.at(f.vertices[i + 1]).y / factor);
     }
     drawLine(centerX + baseWidth * vertices.begin()->z / factor,
              centerY - baseHeight * vertices.begin()->y / factor,
              centerX + baseWidth * (vertices.end() - 1)->z / factor,
-             centerY - baseHeight * (vertices.end() - 1)->y / factor,
-             Color::black);
+             centerY - baseHeight * (vertices.end() - 1)->y / factor);
   }
 }
 
@@ -155,4 +152,29 @@ void Renderer::drawMeshGrid3dProjections(const vector<Vertex> &vertices,
   drawMeshGridFront(vertices, faces, scale, midX, midY);
   drawMeshGridSide(vertices, faces, scale, 3 * midX, midY);
   drawMeshGridUp(vertices, faces, scale, midX, 3 * midY);
+}
+
+void Renderer::drawTriangle(
+    Point p1, Point p2, Point p3,
+    TGAColor &color = const_cast<TGAColor &>(Color::black)) {
+  vector<Point> points;
+  points.push_back(p1);
+  points.push_back(p2);
+  points.push_back(p3);
+}
+
+std::pair<Point, Point>
+Renderer::getShortestVertex(const Point &p1, const Point &p2, const Point &p3) {
+  auto maxLength = 0;
+  using vertex = pair<Point, Point>;
+  vector<vertex> allVertices{{p1, p2}, {p2, p3}, {p1, p3}};
+  auto getLength = [](vertex p) {
+    auto deltaX = abs(p.first.x - p.second.x);
+    auto deltaY = abs(p.first.y - p.second.y);
+    return deltaX * deltaX + deltaY * deltaY;
+  };
+  return *min_element(allVertices.begin(), allVertices.end(),
+                      [getLength](const vertex &v1, const vertex &v2) -> bool {
+                        return getLength(v1) > getLength(v2);
+                      });
 }

@@ -20,3 +20,9 @@ struct Face {
     cout << endl;
   }
 };
+
+struct Point {
+  int x, y;
+  Point(const int &a, const int &b) : x(a), y(b) {}
+  bool operator<(const Point &rhs) { return this->y < rhs.y; }
+};

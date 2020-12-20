@@ -23,7 +23,13 @@ public:
         midY(baseHeight / 2), outputFile(outputFile) {
     image.reset(new TGAImage{baseWidth, baseHeight, TGAImage::RGB});
   };
-  void drawLine(int x1, int y1, int x2, int y2, TGAColor color);
+  void drawLine(int x1, int y1, int x2, int y2,
+                TGAColor &color = const_cast<TGAColor &>(Color::black));
+
+  void drawLine(Point p1, Point p2,
+                TGAColor &color = const_cast<TGAColor &>(Color::black)) {
+    drawLine(p1.x, p1.y, p2.x, p2.y, color);
+  }
 
   void drawStar(int x, int y, int radius);
 
@@ -44,6 +50,8 @@ public:
                         int centerY);
   void drawMeshGrid3dProjections(const vector<Vertex> &vertices,
                                  const vector<Face> &faces, int scale);
+  void drawTriangle(Point p0, Point p1, Point p2,
+                    TGAColor &color = const_cast<TGAColor &>(Color::black));
 
 private:
   string outputFile;
@@ -52,4 +60,6 @@ private:
   const unsigned baseWidth;
   const unsigned midY;
   const unsigned midX;
+  std::pair<Point, Point> getShortestVertex(const Point &p1, const Point &p2,
+                                            const Point &p3);
 };
